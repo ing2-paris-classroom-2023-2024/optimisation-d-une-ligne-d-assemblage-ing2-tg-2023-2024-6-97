@@ -9,8 +9,7 @@
 #include <stdlib.h>
 
 typedef struct {
-    int capacite;
-    int flot;
+    float temps;
 } Arc;
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
