@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// structure a changer
 typedef struct {
     float temps;
 } Arc;
