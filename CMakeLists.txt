@@ -3,4 +3,4 @@ project(optimisation_d_une_ligne_d_assemblage_ing2_tg_2023_2024_6_97_git C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(optimisation_d_une_ligne_d_assemblage_ing2_tg_2023_2024_6_97_git main.c)
+add_executable(optimisation_d_une_ligne_d_assemblage_ing2_tg_2023_2024_6_97_git main.c header.h)
