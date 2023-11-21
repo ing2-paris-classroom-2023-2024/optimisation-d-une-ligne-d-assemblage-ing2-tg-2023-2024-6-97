@@ -1,6 +1,8 @@
 #include "header.h"
 
 int main() {
-    printf("Hello, Louis (Test)!\n");
+    chargementGrapheOriente();
+    //chargementExclusions();
+
     return 0;
 }

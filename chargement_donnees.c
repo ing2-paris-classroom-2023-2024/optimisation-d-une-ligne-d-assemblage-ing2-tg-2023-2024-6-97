@@ -9,5 +9,4 @@ void chargementGrapheOriente() {
         exit(1);
     }
 
-
 }
