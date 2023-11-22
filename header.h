@@ -1,7 +1,6 @@
 #ifndef OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
 #define OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
 
-
 /// ██████╗ ██╗██████╗ ██╗     ██╗ ██████╗ ████████╗██╗  ██╗███████╗ ██████╗ ██╗   ██╗███████╗███████╗
 /// ██╔══██╗██║██╔══██╗██║     ██║██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██╔═══██╗██║   ██║██╔════╝██╔════╝
 /// ██████╔╝██║██████╔╝██║     ██║██║   ██║   ██║   ███████║█████╗  ██║   ██║██║   ██║█████╗  ███████╗
@@ -11,10 +10,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <allegro.h> //Allegro pour l'affichage des graphes
 #include <time.h>
 #include <math.h>
-
 
 
 /// ███████╗████████╗██████╗ ██╗   ██╗ ██████╗████████╗██╗   ██╗██████╗ ███████╗███████╗
@@ -27,7 +24,6 @@
 /* Structure d'un arc*/
 struct Arc {
     int sommet; // numéro de sommet d'un arc adjacent au sommet initial
-    int valeur; //Poids de l'arc
     struct Arc* arc_suivant;
 };
 typedef struct Arc* pArc; /* Alias de pointeur sur un Arc */
@@ -36,6 +32,7 @@ typedef struct Arc* pArc; /* Alias de pointeur sur un Arc */
 struct Sommet {
     struct Arc* arc;
     int *exclu; ///Stocke les id des sommets exclus
+    int poids; //Poids du sommet (représente le temps d'exécution d'une machine)
     int visite;
     int id;     //ID du sommet
 };
@@ -62,7 +59,7 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 /// ██║     ██║  ██║╚██████╔╝   ██║   ╚██████╔╝   ██║      ██║   ██║     ███████╗███████║
 /// ╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝    ╚═╝      ╚═╝   ╚═╝     ╚══════╝╚══════╝
 
-void chargementGrapheOriente();
+Graphe chargementGrapheOriente();
 
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H

@@ -1,7 +1,7 @@
 #include "header.h"
 
 int main() {
-    chargementGrapheOriente();
+    Graphe ligneAssemblage =chargementGrapheOriente();
     //chargementExclusions();
 
     return 0;
