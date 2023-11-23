@@ -21,15 +21,15 @@
 /// ███████║   ██║   ██║  ██║╚██████╔╝╚██████╗   ██║   ╚██████╔╝██║  ██║███████╗███████║
 /// ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
 
-/* Structure d'un arc*/
-struct Arc {
+
+struct Arc { /* Structure d'un arc*/
     int sommet; // numéro de sommet d'un arc adjacent au sommet initial
     struct Arc* arc_suivant;
 };
 typedef struct Arc* pArc; /* Alias de pointeur sur un Arc */
 
-/* Structure d'un sommet*/
-struct Sommet {
+
+struct Sommet { /* Structure d'un sommet*/
     struct Arc* arc;
     int *exclu; ///Stocke les id des sommets exclus
     int poids; //Poids du sommet (représente le temps d'exécution d'une machine)
@@ -38,8 +38,8 @@ struct Sommet {
 };
 typedef struct Sommet* pSommet; /* Alias de pointeur sur un Sommet */
 
-/* Structure d'un graphe*/
-typedef struct Graphe {
+
+typedef struct Graphe { /* Structure d'un graphe*/
     int ordre;  //Nombre de sommets
     int taille; //Nombre d'arêtes / arcs
     pSommet* pSommet;
@@ -59,7 +59,10 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 /// ██║     ██║  ██║╚██████╔╝   ██║   ╚██████╔╝   ██║      ██║   ██║     ███████╗███████║
 /// ╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝    ╚═╝      ╚═╝   ╚═╝     ╚══════╝╚══════╝
 
-Graphe chargementGrapheOriente();
+Graphe *chargementGrapheOriente();
+Graphe *CreerGraphe(int ordre, int tab[ordre]);
+pSommet *CreerArete(pSommet* sommet,int s1,int s2);
+int getIndex(int sommet, int* tabSommetsUniques, int nbSommets);
 
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H

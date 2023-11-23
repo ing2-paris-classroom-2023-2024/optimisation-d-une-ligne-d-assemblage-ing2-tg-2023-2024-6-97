@@ -1,6 +1,6 @@
 #include "header.h"
 
-Graphe chargementGrapheOriente() {
+Graphe *chargementGrapheOriente() {
     FILE* precedences = fopen("precedences.txt", "r");
     FILE* durees = fopen("operations.txt", "r");
     if (precedences == NULL || durees == NULL) {
@@ -8,8 +8,8 @@ Graphe chargementGrapheOriente() {
         exit(1);
     }
 
-    //Le nombre de sommets n'étant pas précisé on doit charger chaque ligne du fichier pour connaitre le nombre d'arcs
-    //Et ensuite on peut trouver le nombre de sommets
+    //Le nombre de sommets n'étant pas précisé, on doit charger chaque ligne du fichier pour connaitre le nombre d'arcs
+    //Et ensuite, on peut trouver le nombre de sommets
     //Et donc allouer un nouvel arc à chaque chargement de ligne //Sachant que les id des sommets ne représentent pas leur position dans le tableau
 
 
@@ -36,7 +36,7 @@ Graphe chargementGrapheOriente() {
 
     ///Reset des variables
     tabSommetsUniques[0] = tabSommetsMultiples[0]; //On met le premier sommet dans le tableau des uniques
-    for(int z =0; z <nbSommetsMAX; z++){ tabSommetsUniques[z] =-500; } //On set le tableau des uniques pour comparaison
+    for(int z =0; z <nbSommetsMAX; z++){ tabSommetsUniques[z] =-500; } //On met le tableau des uniques à -500 valeur défaut
 
     ///Trouve tous les sommets uniques et les compte
     for(int i =0; i <iter; i++){
@@ -54,9 +54,23 @@ Graphe chargementGrapheOriente() {
 
     ///================================================================================///
     ///========================== CREATION DU GRAPHE (STRUCT) =========================///
-    /*Graphe graphe;
-    graphe.arc = (Arete *)malloc(arbreMinimum.nombreAretes * sizeof(Arete));
-    arbreMinimum.sommets = (Sommet *)malloc(graphe.nombreSommets * sizeof(Sommet));*/
+    Graphe *graphe;
+    graphe = CreerGraphe(nbSommets, tabSommetsUniques);
+    graphe->ordre =nbSommets;
+    graphe->taille =nbArcs;
+
+    //Créer les arêtes du graphe
+    rewind(precedences); //On remet le curseur au début du fichier
+    for (int i = 0; i < nbArcs; i++) {
+        fscanf(precedences, "%d %d", &s1, &s2);
+        int indexS1 = getIndex(s1, tabSommetsUniques, nbSommets); //Recuperation de l'index du sommet dans le tableau des sommets uniques
+        int indexS2 = getIndex(s2, tabSommetsUniques, nbSommets);
+        if (indexS1 != -1 && indexS2 != -1) {
+            graphe->pSommet = CreerArete(graphe->pSommet, indexS1, indexS2);
+        } else {
+            printf("Erreur : Sommet non trouvé.\n");
+        }
+    }
 
 
     ///================================================================================///
@@ -82,6 +96,55 @@ Graphe chargementGrapheOriente() {
     }
     printf("\nFin du chargement\n");
 
-    free(tabSommetsUniques); //On libère la mémoire de ce tableau temporaire
     return graphe;
+}
+
+
+
+Graphe *CreerGraphe(int ordre, int tab[ordre]) { // Alloue dynamiquement le graphe et ses sommets
+    Graphe * Newgraphe=(Graphe*)malloc(sizeof(Graphe));
+    Newgraphe->pSommet = (pSommet*)malloc(ordre*sizeof(pSommet));
+
+    int pos;
+
+    for(int i =0; i <ordre; i++){
+        pos =tab[i]; printf("Pos : %d\n", pos);
+        Newgraphe->pSommet[i]=(pSommet)malloc(sizeof(struct Sommet));
+        Newgraphe->pSommet[i]->id =tab[i];
+        Newgraphe->pSommet[i]->arc=NULL;
+    }
+    return Newgraphe;
+}
+
+
+
+pSommet* CreerArete(pSommet* sommet, int s1, int s2) {
+    pArc Newarc = (pArc)malloc(sizeof(struct Arc));
+    Newarc->sommet = s2;
+    Newarc->arc_suivant = NULL;
+
+    if (sommet[s1]->arc == NULL || sommet[s1]->arc->sommet > s2) {
+        // Insérer au début de la liste ou si la liste est vide
+        Newarc->arc_suivant = sommet[s1]->arc;
+        sommet[s1]->arc = Newarc;
+    } else {
+        pArc temp = sommet[s1]->arc;
+        while (temp->arc_suivant != NULL && temp->arc_suivant->sommet < s2) {
+            temp = temp->arc_suivant;
+        }
+        Newarc->arc_suivant = temp->arc_suivant;
+        temp->arc_suivant = Newarc;
+    }
+
+    return sommet;
+}
+
+
+int getIndex(int sommet, int* tabSommetsUniques, int nbSommets) {
+    for (int i = 0; i < nbSommets; i++) {
+        if (tabSommetsUniques[i] == sommet) {
+            return i;
+        }
+    }
+    return -1; // Sommet non trouvé
 }

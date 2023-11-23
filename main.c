@@ -1,7 +1,9 @@
 #include "header.h"
 
 int main() {
-    Graphe ligneAssemblage =chargementGrapheOriente();
+    Graphe *ligneAssemblage;
+    ligneAssemblage =chargementGrapheOriente();
+
     //chargementExclusions();
 
     return 0;
