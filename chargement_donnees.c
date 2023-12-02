@@ -50,31 +50,40 @@ Graphe *chargementGrapheOriente() {
             nbSommets++;
         }
         corresp =0;
-    }
+    } //nbSommets contient le nombre de sommets uniques
+
+    ///On cherche le num du sommet max pour créer notre graphe
+    int sommetMax =0;
+    for(int i =0; i <nbSommets; i++){
+        if(tabSommetsUniques[i] > sommetMax){
+            sommetMax =tabSommetsUniques[i];
+        }
+    } //sommetMax correspond au numéro du sommet le plus grand
 
     ///================================================================================///
     ///========================== CREATION DU GRAPHE (STRUCT) =========================///
     Graphe *graphe;
-    graphe = CreerGraphe(nbSommets, tabSommetsUniques);
+    graphe = CreerGraphe(sommetMax, nbSommets, tabSommetsUniques);
+    printf("Graphe cree\n");
     graphe->ordre =nbSommets;
     graphe->taille =nbArcs;
 
-    //Créer les arêtes du graphe
+    /* Pour régler les problèmes dus à la non-utilisation de tous les sommets et à la manière dont on stocke le graphe en mémoire
+     * (une liste du nombre exact de sommets donc le 35 peut être à la 30e place et créer des conflits) on change de système
+     * et on passe sur une liste toujours mais du nombre max d'un sommet (donc 35) et on met un booléen qui indique si le sommet
+     * existe ou non. Si le sommet n'existe pas, on ne le prend pas en compte dans le graphe. */
+
     rewind(precedences); //On remet le curseur au début du fichier
+    //Créer les arêtes du graphe
     for (int i = 0; i < nbArcs; i++) {
         fscanf(precedences, "%d %d", &s1, &s2);
-        int indexS1 = getIndex(s1, tabSommetsUniques, nbSommets); //Recuperation de l'index du sommet dans le tableau des sommets uniques
-        int indexS2 = getIndex(s2, tabSommetsUniques, nbSommets);
-        if (indexS1 != -1 && indexS2 != -1) {
-            graphe->pSommet = CreerArete(graphe->pSommet, indexS1, indexS2);
-        } else {
-            printf("Erreur : Sommet non trouvé.\n");
-        }
+        printf("Chose\n");
+        graphe->pSommet = CreerArete(graphe->pSommet, s1, s2, tabSommetsUniques);
     }
 
 
     ///================================================================================///
-    ///============================== LECTURE POIDS ARCS ==============================///
+    ///============================= LECTURE POIDS SOMMETS ============================///
 
     int sommet; float duree;
     /*while (fscanf(durees, "%d %d", &sommet, &duree) != EOF) {
@@ -94,6 +103,20 @@ Graphe *chargementGrapheOriente() {
     for(int i =0; i <nbSommets; i++){
         printf("%d ", tabSommetsUniques[i]);
     }
+
+    for (int i = 0; i < graphe->ordre; i++) {
+        printf("\nSommet %d :\n", graphe->pSommet[i]->id);
+        printf("  Arcs : ");
+
+        pArc arc = graphe->pSommet[i]->arc;
+        while (arc != NULL) {
+            printf("%d ", arc->sommet);
+            arc = arc->arc_suivant;
+        }
+
+        printf("\n");
+    }
+
     printf("\nFin du chargement\n");
 
     return graphe;
@@ -101,24 +124,38 @@ Graphe *chargementGrapheOriente() {
 
 
 
-Graphe *CreerGraphe(int ordre, int tab[ordre]) { // Alloue dynamiquement le graphe et ses sommets
-    Graphe * Newgraphe=(Graphe*)malloc(sizeof(Graphe));
-    Newgraphe->pSommet = (pSommet*)malloc(ordre*sizeof(pSommet));
+Graphe *CreerGraphe(int tailleMax,int ordre, int tab[ordre]) { // Alloue dynamiquement le graphe et ses sommets
+    Graphe *Newgraphe =(Graphe*)malloc(sizeof(Graphe));
+    Newgraphe->pSommet =(pSommet*)malloc(tailleMax *sizeof(pSommet));
 
-    int pos;
-
-    for(int i =0; i <ordre; i++){
-        pos =tab[i]; printf("Pos : %d\n", pos);
+    for(int i =0; i <tailleMax; i++){
         Newgraphe->pSommet[i]=(pSommet)malloc(sizeof(struct Sommet));
-        Newgraphe->pSommet[i]->id =tab[i];
+        Newgraphe->pSommet[i]->existe =0;
+        Newgraphe->pSommet[i]->visite =0;
         Newgraphe->pSommet[i]->arc=NULL;
+    }
+    for(int i =0; i <tailleMax; i++){
+        for(int u =0; u <ordre; u++){
+            if(tab[u] == i){
+                Newgraphe->pSommet[i]->id =tab[u];
+                Newgraphe->pSommet[i]->existe =1;
+            }
+        }
     }
     return Newgraphe;
 }
 
 
 
-pSommet* CreerArete(pSommet* sommet, int s1, int s2) {
+pSommet* CreerArete(pSommet* sommet, int s1, int s2, int *tabSommetsUniques) {
+    if(sommet[s1]->existe ==0 || sommet[s2]->existe ==0){ //On vérifie si les sommets existent avant de tenter d'allouer
+        printf("Erreur : Sommet inexistant.\n");
+        return sommet;
+    }
+
+    int indexS1 = tabSommetsUniques[s1];
+    int indexS2 = tabSommetsUniques[s2];
+
     pArc Newarc = (pArc)malloc(sizeof(struct Arc));
     Newarc->sommet = s2;
     Newarc->arc_suivant = NULL;
@@ -137,14 +174,4 @@ pSommet* CreerArete(pSommet* sommet, int s1, int s2) {
     }
 
     return sommet;
-}
-
-
-int getIndex(int sommet, int* tabSommetsUniques, int nbSommets) {
-    for (int i = 0; i < nbSommets; i++) {
-        if (tabSommetsUniques[i] == sommet) {
-            return i;
-        }
-    }
-    return -1; // Sommet non trouvé
 }

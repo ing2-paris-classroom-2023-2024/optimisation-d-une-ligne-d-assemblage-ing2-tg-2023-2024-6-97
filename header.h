@@ -35,6 +35,7 @@ struct Sommet { /* Structure d'un sommet*/
     int poids; //Poids du sommet (représente le temps d'exécution d'une machine)
     int visite;
     int id;     //ID du sommet
+    int existe; //Booléen qui indique si le sommet existe ou non, car tous les numéros de sommets ne sont pas forcément utilisés
 };
 typedef struct Sommet* pSommet; /* Alias de pointeur sur un Sommet */
 
@@ -60,9 +61,18 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 /// ╚═╝     ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝    ╚═╝      ╚═╝   ╚═╝     ╚══════╝╚══════╝
 
 Graphe *chargementGrapheOriente();
-Graphe *CreerGraphe(int ordre, int tab[ordre]);
-pSommet *CreerArete(pSommet* sommet,int s1,int s2);
-int getIndex(int sommet, int* tabSommetsUniques, int nbSommets);
+Graphe *CreerGraphe(int tailleMax,int ordre, int tab[ordre]);
+pSommet *CreerArete(pSommet* sommet,int s1,int s2, int *tabSommetsUniques);
+
+//Precedence + Temps
+void initialiserMatrice();
+void lireContraintePrecedence();
+void lireTempsOperations();
+void afficherGraphePrecedenceConsole();
+void trierOperations();
+void triTopologique();
+float calculerSommeTemps();
+void repartirEnStations(float tempsCycle);
 
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
