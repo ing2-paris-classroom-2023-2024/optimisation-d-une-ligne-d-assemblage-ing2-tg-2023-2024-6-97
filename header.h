@@ -53,6 +53,19 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 } Exclude;
 
 
+///Structure spécifique pour la précédence (aussi parce que celle au dessus ne fonctionne pas)
+#define MAX_OPERATIONS 100
+
+typedef struct precedences {
+    int precedences[MAX_OPERATIONS][MAX_OPERATIONS];
+    int nbOperations;
+
+    int operationsTriees[MAX_OPERATIONS];
+    int nbPredecesseurs[MAX_OPERATIONS];
+    float temps[MAX_OPERATIONS];
+} t_precedences;
+
+
 /// ██████╗ ██████╗  ██████╗ ████████╗ ██████╗ ████████╗██╗   ██╗██████╗ ███████╗███████╗
 /// ██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝██╔═══██╗╚══██╔══╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔════╝
 /// ██████╔╝██████╔╝██║   ██║   ██║   ██║   ██║   ██║    ╚████╔╝ ██████╔╝█████╗  ███████╗
@@ -64,15 +77,17 @@ Graphe *chargementGrapheOriente();
 Graphe *CreerGraphe(int tailleMax,int ordre, int tab[ordre]);
 pSommet *CreerArete(pSommet* sommet,int s1,int s2, int *tabSommetsUniques);
 
-//Precedence + Temps
-void initialiserMatrice();
-void lireContraintePrecedence();
-void lireTempsOperations();
-void afficherGraphePrecedenceConsole();
-void trierOperations();
-void triTopologique();
-float calculerSommeTemps();
-void repartirEnStations(float tempsCycle);
+int preced_cycles();  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
+
+//Precedence + Temps cycle
+void initialiserMatrice(t_precedences *graph);
+void lireContraintePrecedence(t_precedences *graph);
+void lireTempsOperations(t_precedences *graph);
+void afficherGraphePrecedenceConsole(t_precedences *graph);
+void trierOperations(t_precedences *graph);
+void triTopologique(t_precedences *graph);
+float calculerSommeTemps(t_precedences *graph);
+void repartirEnStations(t_precedences *graph, float tempsCycle);
 
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
