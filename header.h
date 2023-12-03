@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <windows.h>
 
 
 /// ███████╗████████╗██████╗ ██╗   ██╗ ██████╗████████╗██╗   ██╗██████╗ ███████╗███████╗
@@ -20,7 +21,6 @@
 /// ╚════██║   ██║   ██╔══██╗██║   ██║██║        ██║   ██║   ██║██╔══██╗██╔══╝  ╚════██║
 /// ███████║   ██║   ██║  ██║╚██████╔╝╚██████╗   ██║   ╚██████╔╝██║  ██║███████╗███████║
 /// ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
-
 
 struct Arc { /* Structure d'un arc*/
     int sommet; // numéro de sommet d'un arc adjacent au sommet initial
@@ -77,6 +77,8 @@ Graphe *chargementGrapheOriente();
 Graphe *CreerGraphe(int tailleMax,int ordre, int tab[ordre]);
 pSommet *CreerArete(pSommet* sommet,int s1,int s2, int *tabSommetsUniques);
 
+int menu();
+void Color(int couleurDuTexte,int couleurDeFond);
 int preced_cycles();  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
 
 //Precedence + Temps cycle

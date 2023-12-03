@@ -20,7 +20,7 @@ void lireContraintePrecedence(t_precedences *graph) {
     int operationA, operationB;
     graph->nbOperations = 0;  // Initialisation ajoutée
     while (fscanf(fichier, "%d %d", &operationA, &operationB) == 2) {
-        printf("Operation %d -> Operation %d\n", operationA, operationB);
+        //printf("Operation %d -> Operation %d\n", operationA, operationB);
         graph->precedences[operationA - 1][operationB - 1] = 1;
         graph->nbPredecesseurs[operationB - 1]++;
         graph->nbOperations = (operationA > graph->nbOperations) ? operationA : graph->nbOperations;
@@ -35,6 +35,10 @@ void lireTempsOperations(t_precedences *graph) {
     if (fichier == NULL) {
         printf("Impossible d'ouvrir le fichier.\n");
         return;
+    }
+
+    for(int i = 0; i < graph->nbOperations; i++){
+        graph->temps[i] = 0;
     }
 
     int operation;
@@ -126,9 +130,11 @@ void repartirEnStations(t_precedences *graph, float tempsCycle) {
     printf("\nRepartition en stations :\n");
     for (int i = 0; i < graph->nbOperations; ++i) {
         int currentOperation = graph->operationsTriees[i];
-        if (tempsStation + graph->temps[currentOperation] <= tempsCycle) {
-            tempsStation += graph->temps[currentOperation];
-            printf("Station %d : Operation %d (%.2f)\n", station, currentOperation + 1, graph->temps[currentOperation]);
+        if ((tempsStation + graph->temps[currentOperation] <= tempsCycle)) {
+            if(graph->temps[currentOperation] ==0) tempsStation += graph->temps[currentOperation];
+            else {
+                tempsStation += graph->temps[currentOperation];
+                printf("Station %d : Operation %d (%.2f)\n", station, currentOperation + 1, graph->temps[currentOperation]);}
         } else {
             tempsStation = graph->temps[currentOperation];
             printf("\nStation %d : Operation %d (%.2f)\n", ++station, currentOperation + 1, graph->temps[currentOperation]);
