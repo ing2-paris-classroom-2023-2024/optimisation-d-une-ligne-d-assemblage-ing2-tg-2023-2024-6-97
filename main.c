@@ -3,18 +3,35 @@
 int main() {
     //Graphe *ligneAssemblage;
     //ligneAssemblage =chargementGrapheOriente();
-
     //chargementExclusions();
+
+    t_precedences graph; //Structure du graphe avec precedences
+    t_assemblage assemblage;
+
+    initialiserMatrice(&graph);
+    lireContraintePrecedence(&graph);
+    //afficherGraphePrecedenceConsole(&graph);
+
+    // Initialiser les opérations triées
+    for (int i = 0; i < graph.nbOperations; ++i) {
+        graph.operationsTriees[i] = i;
+    }
+
+    trierOperations(&graph); // Trier les opérations en fonction du nombre de prédécesseurs
+    triTopologique(&graph); // Tri topologique des opérations
+
+
     int choix =menu();
     switch(choix){
         case 1:
-            //exclusions();
+            chargerExclusions(&assemblage);
+            //afficherStationsOptimisees(&assemblage);
             break;
         case 2:
             //exclusions_cycles();
             break;
         case 3:
-            preced_cycles();
+            preced_cycles(&graph);
             break;
         case 4:
             //preced_exclu();
@@ -67,31 +84,16 @@ int menu(){
 
 
 
-int preced_cycles(){  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
-    t_precedences graph;
-
-    initialiserMatrice(&graph);
-    lireContraintePrecedence(&graph);
-    //afficherGraphePrecedenceConsole(&graph);
-
-    // Initialiser les opérations triées
-    for (int i = 0; i < graph.nbOperations; ++i) {
-        graph.operationsTriees[i] = i;
-    }
-
-    // Trier les opérations en fonction du nombre de prédécesseurs
-    trierOperations(&graph);
-
-    triTopologique(&graph);
+int preced_cycles(t_precedences *graph){  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
 
     printf("\nOrdre trie des operations : ");
-    for (int i = 0; i < graph.nbOperations; ++i) {
-        printf("%d ", graph.operationsTriees[i] + 1);
+    for (int i = 0; i < graph->nbOperations; ++i) {
+        printf("%d ", graph->operationsTriees[i] + 1);
     }
     printf("\n");
 
-    lireTempsOperations(&graph);
-    float sommeTemps = calculerSommeTemps(&graph);
+    lireTempsOperations(graph);
+    float sommeTemps = calculerSommeTemps(graph);
     printf("Somme des temps : %.2f\n", sommeTemps);
 
     // Lire le temps de cycle depuis le fichier temps_cycle.txt (à ajuster selon le format du fichier)
@@ -113,9 +115,22 @@ int preced_cycles(){  //Sous-programme qui gère les précédences et le temps d
     printf("\nTemps de cycle : %.2f\n", tempsCycle);
 
     // Répartir les opérations en stations en respectant le temps de cycle
-    repartirEnStations(&graph, tempsCycle);
+    repartirEnStations(graph, tempsCycle);
 
     return 0;
+}
+
+
+t_assemblage initialiserAssemblage() {
+    t_assemblage assemblage;
+
+    // Copier les données de la structure t_precedences
+    initialiserMatrice(&assemblage.graph);
+    lireContraintePrecedence(&assemblage.graph);
+
+    // Autres initialisations pour les exclusions, si nécessaire
+
+    return assemblage;
 }
 
 

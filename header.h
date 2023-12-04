@@ -53,7 +53,7 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 } Exclude;
 
 
-///Structure spécifique pour la précédence (aussi parce que celle au dessus ne fonctionne pas)
+///Structure spécifique pour la précédence ///Faite par Louis
 #define MAX_OPERATIONS 100
 
 typedef struct precedences {
@@ -64,6 +64,14 @@ typedef struct precedences {
     int nbPredecesseurs[MAX_OPERATIONS];
     float temps[MAX_OPERATIONS];
 } t_precedences;
+
+///Structure spécifique pour l'exclusion ///Faite par Kimi'
+typedef struct {
+    int exclusions[MAX_OPERATIONS][2];
+    int nbExclusions;
+} t_assemblage;
+
+
 
 
 /// ██████╗ ██████╗  ██████╗ ████████╗ ██████╗ ████████╗██╗   ██╗██████╗ ███████╗███████╗
@@ -80,6 +88,12 @@ pSommet *CreerArete(pSommet* sommet,int s1,int s2, int *tabSommetsUniques);
 int menu();
 void Color(int couleurDuTexte,int couleurDeFond);
 int preced_cycles();  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
+t_assemblage initialiserAssemblage();
+
+//Exclusions
+void chargerExclusions(t_assemblage *assemblage);
+void optimiserLigneAssemblage(t_assemblage *assemblage);
+void afficherStationsOptimisees(t_assemblage *assemblage);
 
 //Precedence + Temps cycle
 void initialiserMatrice(t_precedences *graph);
