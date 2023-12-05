@@ -3,10 +3,15 @@
 
 void initialiserMatrice(t_precedences *graph) {
     for (int i = 0; i < MAX_OPERATIONS; ++i) {
-        for (int j = 0; j < MAX_OPERATIONS; ++j) {
+        for (int j = 0; j < 2; ++j) {
             graph->precedences[i][j] = 0;
         }
         graph->nbPredecesseurs[i] = 0;
+    }
+    graph->nbSommets =0;
+
+    for(int i=0; i<MAX_OPERATIONS; i++){
+        graph->existe[i]=0;
     }
 }
 
@@ -16,9 +21,11 @@ void lireContraintePrecedence(t_precedences *graph) {
         printf("Impossible d'ouvrir le fichier.\n");
         return;
     }
+    //printf("Lecture du fichier precedences.txt\n");
 
     int operationA, operationB;
     graph->nbOperations = 0;  // Initialisation ajoutée
+    rewind(fichier); //On remet le curseur au début du fichier
     while (fscanf(fichier, "%d %d", &operationA, &operationB) == 2) {
         //printf("Operation %d -> Operation %d\n", operationA, operationB);
         graph->precedences[operationA - 1][operationB - 1] = 1;
@@ -26,6 +33,63 @@ void lireContraintePrecedence(t_precedences *graph) {
         graph->nbOperations = (operationA > graph->nbOperations) ? operationA : graph->nbOperations;
         graph->nbOperations = (operationB > graph->nbOperations) ? operationB : graph->nbOperations;
     }
+
+    //On marque les sommets qui existent vraiment :
+    rewind(fichier); //On remet le curseur au début du fichier
+    int val1 =0, val2 =0;
+    int nbOperations =0;
+    while (fscanf(fichier, "%d %d", &val1, &val2) != EOF) { //Compteur du nombre d'arcs et sommets
+        nbOperations +=2; //Deux sommets par ligne
+    }    ///On a notre taille maximale de tableau de sommets s'il sont tous uniques
+    graph->nbSommets = val1;
+
+    int iter =0, corresp =0, nbSommets =0;
+    int tabSommetsMultiples[nbOperations], tabSommetsUniques[nbOperations];
+    rewind(fichier); //On remet le curseur au début du fichier
+    for(int i =0; i <graph->nbSommets; i++){
+        fscanf(fichier, "%d %d", &val1, &val2);
+        graph->existe[val1-1] = 1;
+        graph->existe[val2-1] = 1;
+        if(val1 > graph->nbSommets) graph->nbSommets = val1;
+        if(val2 > graph->nbSommets) graph->nbSommets = val2;
+
+        tabSommetsMultiples[iter] = val1; tabSommetsMultiples[iter+1] = val2;
+        iter+=2;
+    }
+
+
+    ///Reset des variables
+    for(int z =0; z <nbOperations; z++){ tabSommetsUniques[z] =-500; } //On met le tableau des uniques à -500 valeur défaut
+    iter =0;
+
+    ///Trouve tous les sommets uniques et les compte
+    for(int i=0; i<nbOperations; i++){
+        for(int u=0; u<graph->nbSommets; u++){
+            if(tabSommetsMultiples[i] == tabSommetsUniques[u]){
+                corresp =1;
+            }
+        }
+        if(corresp ==0){
+            tabSommetsUniques[iter] = tabSommetsMultiples[i];
+            iter++;
+        }
+        corresp =0;
+    }
+    for(int a=0; a <graph->nbSommets; a++){
+        graph->tabSommets[a] = tabSommetsUniques[a];
+    }
+
+
+    //Boucle de vérification :
+    /*for(int i=0; i<graph->nbSommets; i++){
+        printf("Sommet unique %d : %d\n", i+1, tabSommetsUniques[i]);
+    }*/
+    /*for(int i=0; i<graph->nbSommets; i++){
+        if(graph->existe[i] == 1){
+            printf("Sommet %d existe\n", i+1);
+        }
+    }
+    printf("nbSommets : %d\n", graph->nbSommets);*/
 
     fclose(fichier);
 }
@@ -127,7 +191,7 @@ void repartirEnStations(t_precedences *graph, float tempsCycle) {
     int station = 1;
     float tempsTotal = 0;
 
-    printf("\nRepartition en stations :\n");
+    printf("\nOptimisation Precedences + Temps :\n");
     for (int i = 0; i < graph->nbOperations; ++i) {
         int currentOperation = graph->operationsTriees[i];
         if ((tempsStation + graph->temps[currentOperation] <= tempsCycle)) {
@@ -140,4 +204,7 @@ void repartirEnStations(t_precedences *graph, float tempsCycle) {
             printf("\nStation %d : Operation %d (%.2f)\n", ++station, currentOperation + 1, graph->temps[currentOperation]);
         }
     }
+    Color(4,0); //Rouge
+    printf("\nNombre stations finales : %d\n", station);
+    Color(15,0); //Blanc
 }

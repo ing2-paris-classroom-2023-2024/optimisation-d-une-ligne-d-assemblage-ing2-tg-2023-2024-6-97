@@ -54,11 +54,16 @@ typedef struct Exclu { //Tableau de structure qui pointe vers tous les sommets e
 
 
 ///Structure spécifique pour la précédence ///Faite par Louis
-#define MAX_OPERATIONS 100
+#define MAX_OPERATIONS 200
 
 typedef struct precedences {
-    int precedences[MAX_OPERATIONS][MAX_OPERATIONS];
+    int precedences[MAX_OPERATIONS][2]; //Matrice de precedences comme dans le fichier txt donc le sommet et sa colonne
+    int tabSommets[MAX_OPERATIONS]; //Tableau de tous les sommets UNIQUES qui existent
+    int existe[MAX_OPERATIONS]; //Tableau avec à la case du numéro du sommet soit 1 si le sommet existe, 0 sinon
+    //Exemple pour le sommet 6 on est donc à la case 6-1 du tableau et on a 1 car ce sommet existe vraiment
     int nbOperations;
+
+    int nbSommets; //Le nombre de sommets maximum qui existe dans le graphe (donc le plus grand numéro de sommet)
 
     int operationsTriees[MAX_OPERATIONS];
     int nbPredecesseurs[MAX_OPERATIONS];
@@ -66,9 +71,15 @@ typedef struct precedences {
 } t_precedences;
 
 ///Structure spécifique pour l'exclusion ///Faite par Kimi'
+// Structure spécifique pour les exclusions
 typedef struct {
-    int exclusions[MAX_OPERATIONS][2];
-    int nbExclusions;
+    int exclusions[MAX_OPERATIONS][2]; //Stocke les données comme dans le fihier txt, 2 sommets sur une ligne //Le 2 symbolise les 2 colonnes
+    int tabSommetsExclus[MAX_OPERATIONS]; //Stocke la liste de tous les sommets UNIQUES qui ont au moins une exclusion
+    int nbExclusions; //le nombre de lignes des exclusions donc pour avoir le nombre réel d'exclusions on fait nbExclusions*2
+    int stations[MAX_OPERATIONS][MAX_OPERATIONS]; //Matrice des stations avec en 1ere valeur le numéro de la station et en 2e tous les sommets dans cette station.
+    int nbStations; //Nombre de stations finales
+
+    int sommetsNonExclus[MAX_OPERATIONS]; //Tab des sommets qui n'ont pas d'exclusion et qu'on ajoutera donc à la première station
 } t_assemblage;
 
 
@@ -90,10 +101,22 @@ void Color(int couleurDuTexte,int couleurDeFond);
 int preced_cycles();  //Sous-programme qui gère les précédences et le temps de cycle - Appelé depuis le menu
 t_assemblage initialiserAssemblage();
 
+
+//Temps de cycle
+void lireTempsDesOpe(t_precedences *graph);
+int repartirDansStations(t_precedences *graph);
+
+void precedExclusion();
+int repartirDansStationsMODIF(t_precedences *graph);
+
+
 //Exclusions
-void chargerExclusions(t_assemblage *assemblage);
-void optimiserLigneAssemblage(t_assemblage *assemblage);
+void chargerExclusions(t_assemblage *assemblage, t_precedences *graph);
+int regrouperActions(t_assemblage *assemblage, t_precedences *precedence);
+void ajouterAStation(t_assemblage *assemblage, int sommet, int station);
+void fusionnerStations(t_assemblage *assemblage, int station1, int station2);
 void afficherStationsOptimisees(t_assemblage *assemblage);
+void affichageStationsOptimisees(t_assemblage *assemblage, t_precedences *graph);
 
 //Precedence + Temps cycle
 void initialiserMatrice(t_precedences *graph);
@@ -104,6 +127,12 @@ void trierOperations(t_precedences *graph);
 void triTopologique(t_precedences *graph);
 float calculerSommeTemps(t_precedences *graph);
 void repartirEnStations(t_precedences *graph, float tempsCycle);
+
+
+
+//Divers
+void echanger(int *a, int *b);
+void triBulle(int tableau[], int taille);
 
 
 #endif //OPTIMISATION_D_UNE_LIGNE_D_ASSEMBLAGE_ING2_TG_2023_2024_6_97_GIT_HEADER_H
